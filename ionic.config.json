@@ -1,0 +1,7 @@
+{
+  "name": "parcial3_agustin_ramirez",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
