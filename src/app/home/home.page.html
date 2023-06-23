@@ -1,20 +1,46 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>
-      Blank
+      Clínica Veterinaria KUARAHY
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+<ion-content class="custom-background" [fullscreen]="true">
+  <div class="text-center">
+    <h1>Control de Vacunas</h1>
   </div>
+  <div class="div-contenido">
+    <p>Cliente:</p>
+    <ion-select (ionChange)="onClienteChange($event)">
+      <ion-select-option *ngFor="let item of clientes" value="{{ item.ClienteID }}">
+        {{ item.NombreApelllido }}
+      </ion-select-option>
+    </ion-select>
+  </div>
+  <div class="div-contenido">
+    <p>Mascota:</p>
+    <ion-select [(ngModel)]="selectedMascotaID" (ionChange)="onMascotaChange($event)">
+      <ion-select-option *ngFor="let item of mascotas" [value]="item.MascotaID">
+        {{ item.Nombre }}
+      </ion-select-option>
+    </ion-select>
+    <ion-button (click)="onClick()">Ver Historial</ion-button>
+  </div>
+  <div>
+    <ion-grid class="ion-margin">
+      <ion-row>
+        <ion-col>Fecha Vacunación</ion-col>
+        <ion-col>Vacuna</ion-col>
+        <ion-col>Costo</ion-col>
+      </ion-row>
+      <ion-row *ngFor="let items of vacunas">
+        <ion-col class="item-col">{{items.FechaVacunacion}}</ion-col>
+        <ion-col class="item-col">{{items.vacuna}}</ion-col>
+        <ion-col class="item-col">{{items.costo}}</ion-col>
+      </ion-row>
+      
+    </ion-grid>
+  </div>
+
 </ion-content>

@@ -22,6 +22,40 @@
   margin: 0;
 }
 
+ion-col {
+  background-color: #6cc0f8;
+  color: #fff;
+  text-align: center;
+  padding: 10px;
+}
+
+.item-col {
+  background-color: transparent;
+}
+
+ion-grid {
+  margin-top: 40px;
+  margin-left: 100px;
+  margin-right: 120px;
+}
+
+ion-content {
+  margin-left: 90px;
+}
+
 #container a {
   text-decoration: none;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.custom-background {
+  background-color: #FF0000; /* Reemplaza con tu color preferido */
+  /* Otros estilos de fondo personalizados */
+}
+
+.div-contenido{
+  padding: 20px;
 }
