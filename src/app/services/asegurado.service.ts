@@ -4,11 +4,11 @@ import {HttpClient} from '@angular/common/http'
 @Injectable({
   providedIn: 'root'
 })
-export class ClientesService {
+export class AseguradoService {
 
   constructor(private http:HttpClient) { }
 
-  getClientes(){
-    return this.http.get('https://www.hostcatedral.com/api/appCatalogoLibro/public/getClientes')
+  getAsegurado(nroDocumento: string){
+    return this.http.get(`https://www.hostcatedral.com/api/appAranceles/public/getAsegurado/${nroDocumento}`)
   }
 }

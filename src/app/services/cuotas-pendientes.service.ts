@@ -4,12 +4,12 @@ import {HttpClient} from '@angular/common/http';
 @Injectable({
   providedIn: 'root'
 })
-export class MascotasPorClienteService {
+export class CuotasPendientesService {
 
   constructor(private http:HttpClient) { }
 
-  getMascotas(ClienteID: string) {
-    const url = `https://www.hostcatedral.com/api/appCatalogoLibro/public/getMascotasPorCliente/${ClienteID}`;
+  getCuotasPendientes(AseguradoID: string) {
+    const url = `https://www.hostcatedral.com/api/appAranceles/public/getCuotasPendientes/${AseguradoID}`;
     return this.http.get(url);
   }
 }

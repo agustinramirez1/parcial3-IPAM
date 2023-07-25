@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
-import { ClientesService } from '../services/clientes.service';
-import { MascotasPorClienteService } from '../services/mascotas-por-cliente.service';
-import {VacunasPorMascotaService } from '../services/vacunas-por-mascota.service';
-
-import {ClientesResponse} from '../../app/interfaces/clientes'
-import {MascotasPorClienteResponse} from '../../app/interfaces/mascotasPorCliente'
-import {VacunasPorMascotaResponse} from '../../app/interfaces/vacunasPorMascota'
+import { AseguradoService } from '../services/asegurado.service';
+import { CuotasPendientesService } from '../services/cuotas-pendientes.service';
+import { ConfirmarPagoService } from '../services/confirmar-pago.service' 
+import { AseguradoResponse, Asegurado } from '../interfaces/asegurado';
+import { CuotasResponse, Cuotas } from '../interfaces/CuotasPendientes';
 
 @Component({
   selector: 'app-home',
@@ -13,41 +11,88 @@ import {VacunasPorMascotaResponse} from '../../app/interfaces/vacunasPorMascota'
   styleUrls: ['home.page.scss'],
 })
 export class HomePage {
-  selectedMascotaID!: string;
-  clientes: ClientesResponse[] = [];
-  mascotas: MascotasPorClienteResponse[] = [];
-  vacunas: VacunasPorMascotaResponse[] = [];
+  nroDocumento: string = '';
+  asegurado: Asegurado[] = [];
+  cuotasPendientes: Cuotas[] = [];
 
-  constructor(
-    private serviceClientes: ClientesService,
-    private serviceMacostasPorCliente: MascotasPorClienteService,
-    private serviceVacunasPorMascota: VacunasPorMascotaService
-  ) {}
+  contratoId: string | undefined;
+  nroCuota: string | undefined;
+  montoCuota: string | undefined;
 
-  onClienteChange(event: any) {
-    const ClienteID: string = event.target.value;
-    this.serviceMacostasPorCliente.getMascotas(ClienteID).subscribe((resp) => {
-      this.mascotas = <MascotasPorClienteResponse[]>resp;
-    });
-  }
-
-  onMascotaChange(event: any) {
-    this.selectedMascotaID = event.target.value;
-  }
+  constructor(private serviceAsegurado: AseguradoService,
+    private serviceCuotasPendientes: CuotasPendientesService,
+    private confirmarPagoService: ConfirmarPagoService
+  ) { }
 
   onClick() {
-    if (this.selectedMascotaID) {
-      this.serviceVacunasPorMascota.getVacunas(this.selectedMascotaID).subscribe((resp) => {
-        console.log(this.selectedMascotaID + ' ola')
-        this.vacunas = <VacunasPorMascotaResponse[]>resp;
-        console.log(this.vacunas)
-      });
+    if (this.nroDocumento) {
+      this.serviceAsegurado.getAsegurado(this.nroDocumento).subscribe(
+        (resp: any) => {
+          this.asegurado = resp.data;
+          console.log(this.asegurado);
+
+          if (this.asegurado.length > 0) {
+            const aseguradoID = this.asegurado[0].asegurado_id;
+            this.getCuotasPendientes(aseguradoID);
+          }
+        },
+        (error) => {
+          console.error('Error al obtener el asegurado:', error);
+        }
+      );
     }
   }
 
-  ngOnInit() {
-    this.serviceClientes.getClientes().subscribe((resp) => {
-      this.clientes = <ClientesResponse[]>resp;
-    });
+  getCuotasPendientes(aseguradoID: string) {
+    if (this.asegurado.length > 0) {
+      const aseguradoID = this.asegurado[0].asegurado_id;
+      this.serviceCuotasPendientes.getCuotasPendientes(aseguradoID).subscribe(
+        (data: any) => {
+          this.cuotasPendientes = data.data;
+          console.log(this.cuotasPendientes)
+        },
+        (error) => {
+          console.error('Error al obtener las cuotas pendientes:', error);
+        }
+      );
+    }
+  }
+
+  confirmarPago() {
+    console.log('Contrato ID:', this.contratoId);
+    console.log('Número de Cuota:', this.nroCuota);
+    console.log('Monto de Cuota:', this.montoCuota);
+    if (this.asegurado && this.cuotasPendientes) {
+      
+      const contratoId = this.asegurado[0].asegurado_id;
+      const nroCuota = this.cuotasPendientes[0].nro_cuota; 
+      const montoCuota = this.cuotasPendientes[0].monto_cuota; 
+      
+      const confirmacion = confirm(
+        `¿Seguro que quiere confirmar el pago con ID: ${contratoId}, Cuota Número: ${nroCuota}, Monto de Cuota: ${montoCuota}?`
+      );
+
+      if (confirmacion) {
+        
+        this.confirmarPagoService
+          .registrarPago(contratoId, nroCuota?.toString(), montoCuota?.toString())
+          .subscribe(
+            (response) => {
+              
+              alert('¡Pago realizado exitosamente!');
+              console.log('Pago registrado:', response);
+            },
+            (error) => {
+              
+              console.error('Error al realizar el pago:', error);
+              alert(
+                'Ocurrio un error en el pago. Por favor, inténtalo de nuevo más tarde.'
+              );
+            }
+          );
+      } else {
+        
+      }
+    }
   }
 }
